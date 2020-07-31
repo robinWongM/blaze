@@ -10,6 +10,7 @@ module.exports = function (config, env, helpers) {
   config.plugins.push(
     new DefinePlugin({
       WS_HOST: JSON.stringify(process.env.WS_HOST || `ws://${ip.address()}:3030`),
+      SERVER_HOST: JSON.stringify(process.env.SERVER_HOST || `http://${ip.address()}:3030`)
     })
   );
 

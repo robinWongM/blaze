@@ -2,6 +2,7 @@ import express from 'express';
 import http from 'http';
 import WebSocket from 'ws';
 import cors from 'cors';
+import { v4 as uuid } from 'uuid';
 import Socket from '../utils/socket';
 import Room from '../utils/room';
 import log from './log';
@@ -18,12 +19,13 @@ const server = http.createServer(app);
 const wss = new WebSocket.Server({ server });
 const rooms = {};
 
-wss.on('connection', (ws) => {
-  const socket = new Socket(ws);
+wss.on('connection', (ws, request) => {
+  const ip = request.connection.remoteAddress;
+  const socket = new Socket(ws, ip);
   let room;
   
   socket.listen(constants.JOIN, (data) => {
-    const { roomName, name, peerId } = data;
+    const { roomName = socket.ip, name, peerId } = data;
     socket.name = name;
     socket.peerId = peerId;
 
@@ -58,7 +60,7 @@ wss.on('connection', (ws) => {
     if (Array.isArray(sockets)) {
       if (sockets.length) {
         room.broadcast(constants.USER_LEAVE, socket.name, [ socket.name ]);
-      } else {
+      } else if (!room.watchers.length) {
         delete rooms[room.name];
       }
     }
@@ -98,6 +100,37 @@ app.get('/', (req, res) => {
     message: 'Blaze WebSockets running',
     rooms: Object.keys(rooms).length,
     peers: Object.values(rooms).reduce((sum, room) => sum + room.sockets.length, 0),
+  });
+});
+
+app.get('/local-peers', (req, res) => {
+  const { ip } = req;
+  const headers = {
+    'Content-Type': 'text/event-stream',
+    Connection: 'keep-alive',
+    'Cache-Control': 'no-cache',
+  };
+  res.writeHead(200, headers);
+
+  const watcher = { id: uuid(), res };
+
+  if (!rooms[ip]) {
+    rooms[ip] = new Room(ip);
+  } else {
+    rooms[ip].addWatcher(watcher);
+  }
+
+  rooms[ip].informWatchers([ watcher ]);
+
+  req.on('close', () => {
+    const room = rooms[ip];
+    if (!room) return;
+
+    room.removeWatcher(watcher);
+
+    if (!room.watchers.length && !room.socketsData.length) {
+      delete rooms[ip];
+    }
   });
 });
 
