@@ -29,6 +29,7 @@ jobs:
         tag_with_sha: true
         # Path to the Dockerfile (Default is '{path}/Dockerfile')
         dockerfile: ./server/Dockerfile
+        build_args: WS_SIZE_LIMIT=1125899906842624
   build-client:
     runs-on: ubuntu-latest
     steps:
