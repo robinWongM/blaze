@@ -1,0 +1,46 @@
+name: Publish Docker
+
+on:
+  push:
+    branches: [ master ]
+  pull_request:
+    branches: [ master ]
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+    - name: Build image for blaze server
+      uses: docker/build-push-action@v1.1.1
+      with:
+        # Username used to log in to a Docker registry. If not set then no login will occur
+        username: ${{ secrets.DOCKERHUB_USERNAME }}
+        # Password or personal access token used to log in to a Docker registry. If not set then no login will occur
+        password: ${{ secrets.DOCKERHUB_TOKEN }}
+        # Docker repository to tag the image with
+        repository: robinwongm/blaze-server
+        # Comma-delimited list of tags. These will be added to the registry/repository to form the image's tags
+        tags: master
+        # Automatically tags the built image with the git reference as per the readme
+        tag_with_ref: true
+        # Automatically tags the built image with the git short SHA as per the readme
+        tag_with_sha: true
+        # Path to the Dockerfile (Default is '{path}/Dockerfile')
+        dockerfile: ./server/Dockerfile
+    - name: Build image for blaze client
+      uses: docker/build-push-action@v1.1.1
+      with:
+        # Username used to log in to a Docker registry. If not set then no login will occur
+        username: ${{ secrets.DOCKERHUB_USERNAME }}
+        # Password or personal access token used to log in to a Docker registry. If not set then no login will occur
+        password: ${{ secrets.DOCKERHUB_TOKEN }}
+        # Docker repository to tag the image with
+        repository: robinwongm/blaze-client
+        # Comma-delimited list of tags. These will be added to the registry/repository to form the image's tags
+        tags: master
+        # Automatically tags the built image with the git reference as per the readme
+        tag_with_ref: true
+        # Automatically tags the built image with the git short SHA as per the readme
+        tag_with_sha: true
+        # Path to the Dockerfile (Default is '{path}/Dockerfile')
+        dockerfile: ./client/Dockerfile
