@@ -39,7 +39,7 @@ class FileTransfer extends PureComponent {
     this.state = {
       percentage: null,
       peers: [],
-      isP2P: true,
+      isP2P: false,
       files: [],
       filesQueued: 0,
       errorModal: {
