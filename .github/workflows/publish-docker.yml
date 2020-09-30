@@ -20,7 +20,7 @@ jobs:
         # Password or personal access token used to log in to a Docker registry. If not set then no login will occur
         password: ${{ secrets.DOCKERHUB_TOKEN }}
         # Docker repository to tag the image with
-        repository: robinwongm/blaze-server
+        repository: m208/blaze-server
         # Comma-delimited list of tags. These will be added to the registry/repository to form the image's tags
         tags: master
         # Automatically tags the built image with the git reference as per the readme
@@ -34,7 +34,7 @@ jobs:
     steps:
     - name: Checkout
       uses: actions/checkout@v2.3.3
-    - name: Build image for blaze server
+    - name: Build image for blaze client
       uses: docker/build-push-action@v1.1.1
       with:
         # Username used to log in to a Docker registry. If not set then no login will occur
@@ -42,7 +42,7 @@ jobs:
         # Password or personal access token used to log in to a Docker registry. If not set then no login will occur
         password: ${{ secrets.DOCKERHUB_TOKEN }}
         # Docker repository to tag the image with
-        repository: robinwongm/blaze-server
+        repository: m208/blaze-client
         # Comma-delimited list of tags. These will be added to the registry/repository to form the image's tags
         tags: master
         # Automatically tags the built image with the git reference as per the readme
@@ -50,4 +50,4 @@ jobs:
         # Automatically tags the built image with the git short SHA as per the readme
         tag_with_sha: true
         # Path to the Dockerfile (Default is '{path}/Dockerfile')
-        dockerfile: ./server/Dockerfile
+        dockerfile: ./client/Dockerfile
